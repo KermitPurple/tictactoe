@@ -1,5 +1,7 @@
 const BOARD_SIZE: usize = 3;
 
+use std::fmt;
+
 #[derive(Copy, Clone, Debug, PartialEq)]
 enum Cell {
     X,
@@ -7,11 +9,22 @@ enum Cell {
     Empty,
 }
 
-struct TicTacToeBoard {
+impl fmt::Display for Cell {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = match self {
+            Cell::X => "X",
+            Cell::O => "O",
+            Cell::Empty => " ",
+        };
+        write!(f, "{}", s)
+    }
+}
+
+struct TicTacToe {
     board: [[Cell; BOARD_SIZE]; BOARD_SIZE],
 }
 
-impl TicTacToeBoard {
+impl TicTacToe {
     fn new() -> Self {
         use Cell::*;
         Self { board: [[Empty; BOARD_SIZE]; BOARD_SIZE]
@@ -67,6 +80,21 @@ impl TicTacToeBoard {
             Cell::Empty
         }
     }
+
+    fn draw(&self) {
+        for y in 0..BOARD_SIZE {
+            for x in 0..BOARD_SIZE{
+                print!("{}", self.board[y][x]);
+                if x != BOARD_SIZE - 1 {
+                    print!("|");
+                };
+            }
+            println!();
+            if y != BOARD_SIZE - 1 {
+                println!("-{}", "+-".repeat(BOARD_SIZE - 1));
+            };
+        }
+    }
 }
 
 #[cfg(test)]
@@ -76,7 +104,7 @@ mod tests {
     #[test]
     fn test_full(){
         use Cell::*;
-        let board = TicTacToeBoard {
+        let board = TicTacToe {
             board: [
                 [X; 3],
                 [O, X, O],
@@ -84,11 +112,11 @@ mod tests {
             ]
         };
         assert!(!board.full());
-        let board = TicTacToeBoard {
+        let board = TicTacToe {
             board: [[X; 3]; 3]
         };
         assert!(board.full());
-        let board = TicTacToeBoard {
+        let board = TicTacToe {
             board: [[Empty; 3]; 3]
         };
         assert!(!board.full());
@@ -98,7 +126,7 @@ mod tests {
     fn test_winner() {
         use Cell::*;
         // horizontal
-        let board = TicTacToeBoard {
+        let board = TicTacToe {
             board: [
                 [X, Empty, X],
                 [X; 3],
@@ -106,7 +134,7 @@ mod tests {
             ]
         };
         assert_eq!(board.winner(), X);
-        let board = TicTacToeBoard {
+        let board = TicTacToe {
             board: [
                 [O; 3],
                 [Empty; 3],
@@ -115,7 +143,7 @@ mod tests {
         };
         assert_eq!(board.winner(), O);
         // vertical
-        let board = TicTacToeBoard {
+        let board = TicTacToe {
             board: [
                 [X, O, X],
                 [X, Empty, X],
@@ -123,7 +151,7 @@ mod tests {
             ]
         };
         assert_eq!(board.winner(), X);
-        let board = TicTacToeBoard {
+        let board = TicTacToe {
             board: [
                 [X, O, Empty],
                 [Empty, O, X],
@@ -132,7 +160,7 @@ mod tests {
         };
         assert_eq!(board.winner(), O);
         // diagonal \
-        let board = TicTacToeBoard {
+        let board = TicTacToe {
             board: [
                 [X, O, O],
                 [O, X, O],
@@ -140,7 +168,7 @@ mod tests {
             ]
         };
         assert_eq!(board.winner(), X);
-        let board = TicTacToeBoard {
+        let board = TicTacToe {
             board: [
                 [O, X, X],
                 [X, O, X],
@@ -149,7 +177,7 @@ mod tests {
         };
         assert_eq!(board.winner(), O);
         // diagonal /
-        let board = TicTacToeBoard {
+        let board = TicTacToe {
             board: [
                 [O, O, X],
                 [O, X, O],
@@ -157,7 +185,7 @@ mod tests {
             ]
         };
         assert_eq!(board.winner(), X);
-        let board = TicTacToeBoard {
+        let board = TicTacToe {
             board: [
                 [O, X, O],
                 [X, O, X],
@@ -166,7 +194,7 @@ mod tests {
         };
         assert_eq!(board.winner(), O);
         // no winner
-        let board = TicTacToeBoard {
+        let board = TicTacToe {
             board: [
                 [X, O, X],
                 [X, O, X],
@@ -174,7 +202,7 @@ mod tests {
             ]
         };
         assert_eq!(board.winner(), Empty);
-        let board = TicTacToeBoard {
+        let board = TicTacToe {
             board: [[Empty; 3]; 3]
         };
         assert_eq!(board.winner(), Empty);
