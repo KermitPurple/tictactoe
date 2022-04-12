@@ -10,6 +10,17 @@ enum Cell {
     Empty,
 }
 
+impl Cell{
+    fn swap(&mut self) {
+        use Cell::*;
+        *self = match self {
+            X => O,
+            O => X,
+            Empty => Empty,
+        }
+    }
+}
+
 impl fmt::Display for Cell {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let s = match self {
@@ -97,8 +108,31 @@ impl TicTacToe {
         }
     }
 
-    fn play(&self) {
-        
+    fn set_cell(&mut self, index: usize, cell: Cell) {
+        let x = index % 3;
+        let y = index / 3;
+        self.board[y][x] = cell;
+    }
+
+    fn play(&mut self) {
+        let mut turn = Cell::X;
+        self.draw();
+        while !self.full() {
+            println!("It's {turn}'s turn");
+            self.set_cell(
+                get_num(Some("Enter a number between 1 and 9> "), Some(1..=9)).unwrap() - 1,
+                turn,
+            );
+            println!();
+            self.draw();
+            let winner = self.winner();
+            if winner != Cell::Empty {
+                println!("{winner} wins!");
+                return;
+            }
+            turn.swap();
+        }
+        println!("It's a cat's game!");
     }
 }
 
@@ -239,6 +273,5 @@ fn get_num<T: PartialOrd<T> + std::str::FromStr>(prompt: Option<&str>, range: Op
 }
 
 fn main() {
-    let num = get_num::<usize>(Some("Enter a number between 0 and 10> "), Some(0..=10)).unwrap();
-    dbg!(num);
+    TicTacToe::new().play();
 }
