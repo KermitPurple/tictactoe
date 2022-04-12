@@ -1,5 +1,6 @@
 const BOARD_SIZE: usize = 3;
 
+use std::io::prelude::*;
 use std::fmt;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -94,6 +95,10 @@ impl TicTacToe {
                 println!("-{}", "+-".repeat(BOARD_SIZE - 1));
             };
         }
+    }
+
+    fn play(&self) {
+        
     }
 }
 
@@ -210,5 +215,30 @@ mod tests {
     
 }
 
+fn get_num<T: PartialOrd<T> + std::str::FromStr>(prompt: Option<&str>, range: Option<std::ops::RangeInclusive<T>>) -> std::io::Result<T> {
+    loop {
+        if let Some(prompt) = prompt {
+            print!("{}", prompt);
+            std::io::stdout().flush()?;
+        }
+        let mut input = String::new();
+        std::io::stdin().read_line(&mut input)?;
+        let input = input.trim();
+        if let Ok(value) = input.parse::<T>() {
+            if let Some(ref range) = range {
+                if range.contains(&value) {
+                    return Ok(value);
+                }
+            } else {
+                return Ok(value);
+            }
+        } else {
+            println!("Input is not a valid number");
+        }
+    }
+}
+
 fn main() {
+    let num = get_num::<usize>(Some("Enter a number between 0 and 10> "), Some(0..=10)).unwrap();
+    dbg!(num);
 }
