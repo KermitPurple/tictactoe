@@ -44,7 +44,7 @@ impl TicTacToe {
     }
 
     fn full(&self) -> bool {
-        self.board.iter().all(|row| row.iter().all(|&cell| cell != Cell::Empty))
+        self.board.iter().flatten().all(|&cell| cell != Cell::Empty)
     }
 
     fn winner(&self) -> Cell {
